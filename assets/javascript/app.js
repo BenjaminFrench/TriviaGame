@@ -3,6 +3,7 @@ var triviaGame = {
     correctGuesses: 0,
     incorrectGuesses: 0,
     nextQTimeout: null,
+    finalQtimeout: null,
     questionNumber: 0,
 
     timer: {
@@ -122,7 +123,7 @@ var triviaGame = {
         
         else {
             // show final scoreboard
-            setTimeout(triviaGame.showFinalScore, 14000);
+            triviaGame.finalQtimeout = setTimeout(triviaGame.showFinalScore, 14000);
         }
         $(".answer-choice").on("click", function() {
             triviaGame.timer.stop();
@@ -144,6 +145,7 @@ var triviaGame = {
                 }
                 else {
                     // show final scoreboard
+                    clearTimeout(triviaGame.finalQtimeout);
                     triviaGame.showFinalScore();
                 }
             }
@@ -175,6 +177,7 @@ var triviaGame = {
                 }
                 else {
                     // show final scoreboard
+                    clearTimeout(triviaGame.finalQtimeout);
                     triviaGame.showFinalScore();
                 }
             }
