@@ -32,7 +32,6 @@ var triviaGame = {
                 $("#question-panel").append(`
                 <h3><span id="times-up">You ran out of time.</span></h3>
                 <h2>${triviaGame.questionList[triviaGame.questionNumber].question}</h2>
-                <h3>You chose the wrong answer</h3>
                 <h3>The correct answer is:</h3>
                 <p>${correctAnswer}</p>
                 `);
@@ -111,19 +110,21 @@ var triviaGame = {
         <div class="answer-line"><button data-is-correct="${question.answers[2].isCorrect}"class="btn btn-default answer-choice">${question.answers[2].text}</button></div>
         <div class="answer-line"><button data-is-correct="${question.answers[3].isCorrect}"class="btn btn-default answer-choice">${question.answers[3].text}</button></div>
         `);
-        triviaGame.timer.start(5);
+        triviaGame.timer.start(10);
         if (triviaGame.questionNumber < 4) {
             var currentQuestion = triviaGame.questionList[triviaGame.questionNumber+1];
-            triviaGame.nextQTimeout = setTimeout(triviaGame.showQuestion, 8000, currentQuestion, triviaGame.questionNumber+1);
+            triviaGame.nextQTimeout = setTimeout(triviaGame.showQuestion, 14000, currentQuestion, triviaGame.questionNumber+1);
         }
         
         else {
             // show final scoreboard
+            setTimeout(triviaGame.showFinalScore, 14000);
         }
         $(".answer-choice").on("click", function() {
             triviaGame.timer.stop();
             if (this.getAttribute("data-is-correct") === "true") {
                 console.log("clicked right answer");
+                triviaGame.correctGuesses++;
                 clearTimeout(triviaGame.nextQTimeout);
                 $("#question-panel").empty();
                 $("#question-panel").append(`
@@ -133,16 +134,18 @@ var triviaGame = {
                 `);
                 if (triviaGame.questionNumber < 4) {
                     var currentQuestion = triviaGame.questionList[triviaGame.questionNumber+1];
-                    triviaGame.nextQTimeout = setTimeout(triviaGame.showQuestion, 3000, currentQuestion, triviaGame.questionNumber+1)
+                    triviaGame.nextQTimeout = setTimeout(triviaGame.showQuestion, 4000, currentQuestion, triviaGame.questionNumber+1)
                      triviaGame.questionNumber++;
             
                 }
                 else {
                     // show final scoreboard
+                    triviaGame.showFinalScore();
                 }
             }
             else {
                 //chose wrong answer
+                triviaGame.incorrectGuesses++;
                 var correctAnswer;
                 for (let index = 0; index < triviaGame.questionList[triviaGame.questionNumber].answers.length; index++) {
                     var answer = triviaGame.questionList[triviaGame.questionNumber].answers[index];
@@ -162,16 +165,25 @@ var triviaGame = {
                 `);
                 if (triviaGame.questionNumber < 4) {
                     var currentQuestion = triviaGame.questionList[triviaGame.questionNumber+1];
-                    triviaGame.nextQTimeout = setTimeout(triviaGame.showQuestion, 3000, currentQuestion, triviaGame.questionNumber+1)
+                    triviaGame.nextQTimeout = setTimeout(triviaGame.showQuestion, 4000, currentQuestion, triviaGame.questionNumber+1)
             triviaGame.questionNumber++;
             
                 }
                 else {
                     // show final scoreboard
+                    triviaGame.showFinalScore();
                 }
             }
             
         });
+    },
+    showFinalScore: function () {
+        $("#question-panel").empty();
+        $("#question-panel").append(`
+        <h2>Final Results</h2>
+        <h3>Correct guesses: ${triviaGame.correctGuesses}</h3>
+        <p>Incorrect guesses: ${triviaGame.incorrectGuesses}</p>
+        `);        
     }
 
 
