@@ -1,5 +1,7 @@
 var triviaGame = {
 
+    correctGuesses: 0,
+    incorrectGuesses: 0,
     nextQTimeout: null,
     questionNumber: 0,
 
@@ -15,6 +17,26 @@ var triviaGame = {
             else {
                 clearInterval(triviaGame.timer.interval);
                 console.log("timer done");
+                triviaGame.incorrectGuesses++;
+
+                // disply answer
+                var correctAnswer;
+                for (let index = 0; index < triviaGame.questionList[triviaGame.questionNumber].answers.length; index++) {
+                    var answer = triviaGame.questionList[triviaGame.questionNumber].answers[index];
+                    if (answer.isCorrect) {
+                        correctAnswer = answer.text;
+                    }
+                    
+                }
+                $("#question-panel").empty();
+                $("#question-panel").append(`
+                <h3><span id="times-up">You ran out of time.</span></h3>
+                <h2>${triviaGame.questionList[triviaGame.questionNumber].question}</h2>
+                <h3>You chose the wrong answer</h3>
+                <h3>The correct answer is:</h3>
+                <p>${correctAnswer}</p>
+                `);
+                triviaGame.questionNumber++;
             }
         },
         start: function (seconds) {
@@ -29,44 +51,44 @@ var triviaGame = {
         }
     },
     questionList: [{
-        question: "Question 1",
+        question: "What is the capital of Alaska?",
         answers: [
-            { text: "blah", isCorrect: true },
-            { text: "An answer to a question", isCorrect: false },
-            { text: "An answer to a question", isCorrect: false },
-            { text: "An answer to a question", isCorrect: false }]
+            { text: "Helena", isCorrect: false },
+            { text: "Juneau", isCorrect: true },
+            { text: "Anchorage", isCorrect: false },
+            { text: "Jacksonville", isCorrect: false }]
     },
     {
-        question: "Question 2",
+        question: "What is the capital of North Carolina?",
         answers: [
-            { text: "An answer to a question", isCorrect: true },
-            { text: "An answer to a question", isCorrect: false },
-            { text: "An answer to a question", isCorrect: false },
-            { text: "An answer to a question", isCorrect: false }]
+            { text: "Raleigh", isCorrect: true },
+            { text: "Charlotte", isCorrect: false },
+            { text: "Charleston", isCorrect: false },
+            { text: "Myrtle Beach", isCorrect: false }]
     },
     {
-        question: "Question 3",
+        question: "What is the capital of Maryland?",
         answers: [
-            { text: "An answer to a question", isCorrect: true },
-            { text: "An answer to a question", isCorrect: false },
-            { text: "An answer to a question", isCorrect: false },
-            { text: "An answer to a question", isCorrect: false }]
+            { text: "Baltimore", isCorrect: false },
+            { text: "Rockville", isCorrect: false },
+            { text: "Annapolis", isCorrect: true },
+            { text: "Norfolk", isCorrect: false }]
     },
     {
-        question: "Question 4",
+        question: "What is the capital of California?",
         answers: [
-            { text: "An answer to a question", isCorrect: true },
-            { text: "An answer to a question", isCorrect: false },
-            { text: "An answer to a question", isCorrect: false },
-            { text: "An answer to a question", isCorrect: false }]
+            { text: "Sacramento", isCorrect: true },
+            { text: "San Francisco", isCorrect: false },
+            { text: "Los Angeles", isCorrect: false },
+            { text: "San Diego", isCorrect: false }]
     },
     {
-        question: "What is my favorite color",
+        question: "What is the capital of Ohio?",
         answers: [
-            { text: "Red", isCorrect: true },
-            { text: "Green", isCorrect: false },
-            { text: "Blue", isCorrect: false },
-            { text: "Yellow", isCorrect: false }]
+            { text: "Cleveland", isCorrect: false },
+            { text: "Akron", isCorrect: false },
+            { text: "Cincinnati", isCorrect: false },
+            { text: "Columbus", isCorrect: true }]
     },],
 
     startgame: function () {
@@ -89,12 +111,17 @@ var triviaGame = {
         <div class="answer-line"><button data-is-correct="${question.answers[2].isCorrect}"class="btn btn-default answer-choice">${question.answers[2].text}</button></div>
         <div class="answer-line"><button data-is-correct="${question.answers[3].isCorrect}"class="btn btn-default answer-choice">${question.answers[3].text}</button></div>
         `);
-        triviaGame.timer.start(10);
+        triviaGame.timer.start(5);
         if (triviaGame.questionNumber < 4) {
             var currentQuestion = triviaGame.questionList[triviaGame.questionNumber+1];
-            triviaGame.nextQTimeout = setTimeout(triviaGame.showQuestion, 13000, currentQuestion, triviaGame.questionNumber+1);
+            triviaGame.nextQTimeout = setTimeout(triviaGame.showQuestion, 8000, currentQuestion, triviaGame.questionNumber+1);
+        }
+        
+        else {
+            // show final scoreboard
         }
         $(".answer-choice").on("click", function() {
+            triviaGame.timer.stop();
             if (this.getAttribute("data-is-correct") === "true") {
                 console.log("clicked right answer");
                 clearTimeout(triviaGame.nextQTimeout);
@@ -104,6 +131,15 @@ var triviaGame = {
                 <h3>You chose the correct answer</h3>
                 <p>${this.innerHTML}</p>
                 `);
+                if (triviaGame.questionNumber < 4) {
+                    var currentQuestion = triviaGame.questionList[triviaGame.questionNumber+1];
+                    triviaGame.nextQTimeout = setTimeout(triviaGame.showQuestion, 3000, currentQuestion, triviaGame.questionNumber+1)
+                     triviaGame.questionNumber++;
+            
+                }
+                else {
+                    // show final scoreboard
+                }
             }
             else {
                 //chose wrong answer
@@ -121,9 +157,18 @@ var triviaGame = {
                 $("#question-panel").append(`
                 <h2>${triviaGame.questionList[triviaGame.questionNumber].question}</h2>
                 <h3>You chose the wrong answer</h3>
-                <h3>The right answer is:</h3>
+                <h3>The correct answer is:</h3>
                 <p>${correctAnswer}</p>
                 `);
+                if (triviaGame.questionNumber < 4) {
+                    var currentQuestion = triviaGame.questionList[triviaGame.questionNumber+1];
+                    triviaGame.nextQTimeout = setTimeout(triviaGame.showQuestion, 3000, currentQuestion, triviaGame.questionNumber+1)
+            triviaGame.questionNumber++;
+            
+                }
+                else {
+                    // show final scoreboard
+                }
             }
             
         });
