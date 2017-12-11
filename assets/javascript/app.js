@@ -91,6 +91,10 @@ var triviaGame = {
     },],
 
     startgame: function () {
+        this.correctGuesses = 0;
+        this.incorrectGuesses = 0;
+        this.nextQTimeout = null;
+        this.questionNumber = 0;
         // clear the question panel
         $("#question-panel").empty();
         var numQuestions = this.questionList.length;
@@ -135,7 +139,7 @@ var triviaGame = {
                 if (triviaGame.questionNumber < 4) {
                     var currentQuestion = triviaGame.questionList[triviaGame.questionNumber+1];
                     triviaGame.nextQTimeout = setTimeout(triviaGame.showQuestion, 4000, currentQuestion, triviaGame.questionNumber+1)
-                     triviaGame.questionNumber++;
+                    triviaGame.questionNumber++;
             
                 }
                 else {
@@ -166,7 +170,7 @@ var triviaGame = {
                 if (triviaGame.questionNumber < 4) {
                     var currentQuestion = triviaGame.questionList[triviaGame.questionNumber+1];
                     triviaGame.nextQTimeout = setTimeout(triviaGame.showQuestion, 4000, currentQuestion, triviaGame.questionNumber+1)
-            triviaGame.questionNumber++;
+                    triviaGame.questionNumber++;
             
                 }
                 else {
@@ -183,7 +187,11 @@ var triviaGame = {
         <h2>Final Results</h2>
         <h3>Correct guesses: ${triviaGame.correctGuesses}</h3>
         <p>Incorrect guesses: ${triviaGame.incorrectGuesses}</p>
-        `);        
+        <button type="button" class="btn btn-success" id="start-button">Click to play again</button>
+        `);
+        $("#start-button").on("click", function (event) {
+            triviaGame.startgame();
+        });
     }
 
 
